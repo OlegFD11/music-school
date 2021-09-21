@@ -1,0 +1,12 @@
+.Dashboard {
+  height: 100%;
+  padding: 30px;
+  flex-grow: 1;
+  min-width: 731px;
+
+  &-header {
+    min-height: 50px;
+    display: flex;
+    justify-content: space-between;
+  }
+}

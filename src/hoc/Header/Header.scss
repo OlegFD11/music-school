@@ -1,0 +1,19 @@
+.Header {
+  display: flex;
+  position: relative;
+  z-index: 100;
+  justify-content: space-between;
+  align-items: center;
+  height: 72px;
+  background: linear-gradient(to left, #fff, #f7f7f7);
+  background: -webkit-gradient(
+    linear,
+    left top,
+    left bottom,
+    from(#fff),
+    to(#f7f7f7)
+  );
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+  padding-left: 30px;
+  padding-right: 30px;
+}
