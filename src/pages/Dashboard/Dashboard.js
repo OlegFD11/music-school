@@ -7,32 +7,35 @@ import QuizCreator from "../../components/QuizCreator/QuizCreator";
 import QuizFilter from "../../components/QuizFilter/QuizFilter";
 import Popup from "../../components/Popup/Popup";
 import axios from "../../axios/axios-quiz";
-import firebase from "firebase";
+import QuizEditor from "../../components/QuizEditor/QuizEditor";
+
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getDatabase, ref, set, onValue } from "firebase/database";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDKUWv_Iw-N7AUc7NChSnWHBaiBFaPt3kk",
+  authDomain: "react-quiz-logol.firebaseapp.com",
+  databaseURL: "https://react-quiz-logol-default-rtdb.firebaseio.com",
+  projectId: "react-quiz-logol",
+  storageBucket: "react-quiz-logol.appspot.com",
+  messagingSenderId: "1037436650260",
+  appId: "1:1037436650260:web:6257bd378b7a6d8efeb801",
+  measurementId: "G-Y52RGTMW7G",
+};
+
+const fireApp = initializeApp(firebaseConfig);
+
+function writeUserData(userId) {
+  const db = getDatabase();
+  set(ref(db, "quizes/" + userId), {});
+}
 
 const Dashboard = () => {
   const [quizes, setQuizes] = useState([]);
 
   const [filter, setFilter] = useState({ sort: "", query: "" });
   const [active, setActive] = useState(false);
-
-  // const createQuestion = () => {};
-
-  // const addQuestion = (quiz) => {
-  //   console.log("test");
-
-  //   let searchTerm = quiz.id;
-  //   setQuestions;
-
-  //   // let currentTerm = quizes.find((quiz) => quiz.id === searchTerm);
-  //   // console.log(currentTerm);
-  //   // setCurentQuiz(...currentQuiz, { currentQuiz: currentTerm.id });
-
-  //   // const newQuiz = quizes.map((quizItem) => {
-  //   //   if (quizItem === quiz.id) {
-  //   //     quizItem.questions.push({ test: "test" });
-  //   //   }
-  //   // });
-  // };
 
   useEffect(() => {
     getUsers();
@@ -87,10 +90,14 @@ const Dashboard = () => {
 
   const removeQuiz = (quiz) => {
     setQuizes(quizes.filter((q) => q.id !== quiz.id));
+    writeUserData(quiz.id);
   };
 
+  const [currentQuiz, setCurrentQuiz] = useState({});
+
   const editQuiz = (quiz) => {
-    console.log(quiz.id);
+    const currentQuiz = quizes.filter((q) => q.id == quiz.id);
+    setCurrentQuiz(currentQuiz[0]);
   };
 
   return (
@@ -102,6 +109,7 @@ const Dashboard = () => {
             Создать тест
           </Button>
         </div>
+        <QuizEditor updateQuiz={currentQuiz} />
       </div>
       <div className="Dashboard-list">
         <Popup active={active} setActive={setActive}>
