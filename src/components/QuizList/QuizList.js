@@ -1,6 +1,6 @@
 import React from "react";
 import QuizItem from "../../components/QuizItem/QuizItem";
-const QuizList = ({ quizes, remove, edit }) => {
+const QuizList = ({ quizes, remove, edit, addQuestions }) => {
   if (!quizes.length) {
     return <h2>Тесты не найдены</h2>;
   }
@@ -9,7 +9,13 @@ const QuizList = ({ quizes, remove, edit }) => {
     <div>
       {quizes.map((quiz) => {
         return (
-          <QuizItem edit={edit} remove={remove} quiz={quiz} key={quiz.id} />
+          <QuizItem
+            addQuestions={addQuestions}
+            edit={edit}
+            remove={remove}
+            quiz={quiz}
+            key={quiz.id}
+          />
         );
       })}
     </div>

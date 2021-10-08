@@ -13,6 +13,14 @@ const QuizItem = (props) => {
         <Button
           stylebutton="Primary"
           onClick={() => {
+            props.addQuestions(props.quiz);
+          }}
+        >
+          Добавить вопросы
+        </Button>
+        <Button
+          stylebutton="Primary"
+          onClick={() => {
             props.edit(props.quiz);
           }}
         >

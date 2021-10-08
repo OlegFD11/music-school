@@ -3,7 +3,7 @@ import "./Dashboard.scss";
 import QuizList from "../../components/QuizList/QuizList";
 import Button from "../../components/UI/Button/Button";
 import QuizCreator from "../../components/QuizCreator/QuizCreator";
-// import QuizQuestionCreator from "../../components/QuizQuestionCreator/QuizQuestionCreator";
+import QuizQuestionCreator from "../../components/QuizQuestionCreator/QuizQuestionCreator";
 import QuizFilter from "../../components/QuizFilter/QuizFilter";
 import Popup from "../../components/Popup/Popup";
 import axios from "../../axios/axios-quiz";
@@ -26,16 +26,14 @@ const firebaseConfig = {
 
 const fireApp = initializeApp(firebaseConfig);
 
-function writeUserData(userId) {
+function removeQuizesData(userId) {
   const db = getDatabase();
   set(ref(db, "quizes/" + userId), {});
 }
 
 const Dashboard = () => {
   const [quizes, setQuizes] = useState([]);
-
   const [filter, setFilter] = useState({ sort: "", query: "" });
-  const [active, setActive] = useState(false);
 
   useEffect(() => {
     getUsers();
@@ -55,6 +53,14 @@ const Dashboard = () => {
       .catch((err) => {
         console.log(err);
       });
+  }
+
+  function writeUserData(userId, chancheQuiz) {
+    const db = getDatabase();
+    set(ref(db, "quizes/" + userId), {
+      title: chancheQuiz.title,
+      category: chancheQuiz.title,
+    });
   }
 
   const sortedQuizes = useMemo(() => {
@@ -79,10 +85,10 @@ const Dashboard = () => {
     const data = {
       title: newQuiz.title,
       category: newQuiz.category,
+      id: newQuiz.id,
     };
-
     try {
-      await axios.post("/quizes.json", data);
+      writeUserData(data.id, data);
     } catch (e) {
       console.log(e);
     }
@@ -90,37 +96,77 @@ const Dashboard = () => {
 
   const removeQuiz = (quiz) => {
     setQuizes(quizes.filter((q) => q.id !== quiz.id));
-    writeUserData(quiz.id);
+    removeQuizesData(quiz.id);
   };
 
-  const [currentQuiz, setCurrentQuiz] = useState({});
-
+  const [currentQuiz, setCurrentQuiz] = useState();
   const editQuiz = (quiz) => {
-    const currentQuiz = quizes.filter((q) => q.id == quiz.id);
-    setCurrentQuiz(currentQuiz[0]);
+    setCurrentQuiz(quiz);
+    setActiveModalContent("updateQuiz");
+    setActive(true);
   };
+
+  const changeQuiz = (chancheQuiz) => {
+    writeUserData(chancheQuiz.id, chancheQuiz);
+    setQuizes(
+      quizes.map((quiz) => (quiz.id === chancheQuiz.id ? chancheQuiz : quiz))
+    );
+    setCurrentQuiz(chancheQuiz);
+    setActive(false);
+  };
+  // questions
+
+  const addQuestions = (quiz) => {
+    setCurrentQuiz(quiz);
+    setActiveModalContent("createQuestion");
+    setActive(true);
+  };
+
+  const createQuestion = (newQuestion) => {
+    console.log(newQuestion);
+    setActive(false);
+  };
+
+  const [active, setActive] = useState(false);
+
+  const [activeModalContent, setActiveModalContent] = useState("");
 
   return (
     <div className="Dashboard">
       <div className="Dashboard-header">
         <h2 className="Dashboard-title">Dashboard</h2>
         <div className="Dashboard-controls">
-          <Button stylebutton="Primary" onClick={() => setActive(true)}>
+          <Button
+            stylebutton="Primary"
+            onClick={() => {
+              setActive(true);
+              setActiveModalContent("createQuiz");
+            }}
+          >
             Создать тест
           </Button>
         </div>
-        <QuizEditor updateQuiz={currentQuiz} />
       </div>
       <div className="Dashboard-list">
         <Popup active={active} setActive={setActive}>
-          <QuizCreator create={createQuiz} />
+          {activeModalContent === "createQuiz" ? (
+            <QuizCreator create={createQuiz} />
+          ) : null}
+          {activeModalContent === "updateQuiz" ? (
+            <QuizEditor updateQuiz={currentQuiz} changeQuiz={changeQuiz} />
+          ) : null}
+          {activeModalContent === "createQuestion" ? (
+            <QuizQuestionCreator createQuestion={createQuestion} />
+          ) : null}
         </Popup>
+
         <hr />
         <QuizFilter filter={filter} setFilter={setFilter} />
         <QuizList
           remove={removeQuiz}
           edit={editQuiz}
           quizes={sortedAndSearchedQuizes}
+          addQuestions={addQuestions}
         />
       </div>
     </div>

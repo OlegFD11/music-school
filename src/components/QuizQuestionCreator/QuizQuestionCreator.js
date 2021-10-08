@@ -11,13 +11,12 @@ const QuizQuestionCreator = (props) => {
     option4: "",
   });
 
-  const addNewQuestion = (e) => {
+  const addQuestions = (e) => {
     e.preventDefault();
     const newQuestion = {
       ...question,
-      id: Math.floor(Math.random() * 10000),
+      id: Math.floor(Math.random() * 1000 * 100),
     };
-    props.createQuestion(newQuestion);
     setQuestion({
       title: "",
       rightAnswer: "",
@@ -26,6 +25,7 @@ const QuizQuestionCreator = (props) => {
       option3: "",
       option4: "",
     });
+    props.createQuestion(newQuestion);
   };
 
   return (
@@ -86,8 +86,8 @@ const QuizQuestionCreator = (props) => {
           placeholder="Правильный ответ"
         />
 
-        <Button type="submit" stylebutton="Primary" onClick={addNewQuestion}>
-          Добавить тест
+        <Button type="submit" stylebutton="Primary" onClick={addQuestions}>
+          Добавить вопрос
         </Button>
       </form>
     </div>

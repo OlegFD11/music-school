@@ -5,16 +5,17 @@ const QuizCreator = (props) => {
   const [quiz, setQuiz] = useState({
     title: "",
     category: "",
+    id: "",
   });
 
   const addNewQuiz = (e) => {
     e.preventDefault();
     const newQuiz = {
       ...quiz,
-      id: Math.floor(Math.random() * 10000),
+      id: Math.floor(Math.random() * 1000000),
     };
     props.create(newQuiz);
-    setQuiz({ title: "", category: "" });
+    setQuiz({ title: "", category: "", id: "" });
   };
 
   return (
